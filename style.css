@@ -1,0 +1,33 @@
+/* body{
+    background-image: url('https://t3.ftcdn.net/jpg/05/12/01/12/360_F_512011244_uL1CdoP2KrDfjz09nYHkdE501sbn3Ktw.jpg');
+    background-size: cover;
+    color: #FFFFFF;
+} */
+/* .stApp {
+    background-color: rgba(255,255,255,0.8);
+    padding: 2rem;
+    border-radius: 15px;
+    color: #333333;
+} */
+
+/* Custom button text color */
+.stButton button {
+    color: #dee1e4;
+    background-color: rgba(142, 222, 224, 0.596); 
+    border: none;
+    padding: 10px 20px; 
+    font-size: 16px; 
+    cursor: pointer; 
+}
+
+.stButton button:hover {
+    background-color: rgba(158, 114, 114, 0.9); /* Darken on hover */
+}
+
+h1,h2,h3, h4, h5, h6 {
+    color:#0a44e4;
+}
+
+p {
+    color: #e9e3e3;
+}
