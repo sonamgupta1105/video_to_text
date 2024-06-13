@@ -6,7 +6,7 @@ import os
 
 
 # Hard-coded API key
-API_KEY = "tlk_1KNS9E41MY0HZ42VBM9PZ25M5CX9"  # Replace with your actual Twelve Labs API key
+API_KEY = "tlk_1KNS9E41MY0HZ42VBM9PZ25M5CX9"  
 client = TwelveLabs(api_key = API_KEY)
 
 # Initialize session state for generated content and index
@@ -28,7 +28,7 @@ def create_index(client):
     if st.session_state['index_id'] is None:
         try:
             index = client.index.create(
-                name="new_v2",
+                name="new_v3",
                 engines=[
                     {
                         "name": "pegasus1",
@@ -78,13 +78,13 @@ def upload_video(client, video_source, is_url=False):
             return None
 
         time.sleep(5)
-    if is_url:
-        st.success(f"Uploaded video from URL. The unique identifier of your video is {task.video_id}")
-    else:
-        st.success(f"Uploaded {video_source.name}. The unique identifier of your video is {task.video_id}")
-    return task.video_id
-    # st.success(f"Uploaded {video_source if is_url else video_source}. The unique identifier of your video is {task.video_id}")
+    # if is_url == True:
+    #     st.success(f"Uploaded video from URL. The unique identifier of your video is {task.video_id}")
+    # else:
+    #     st.success(f"Uploaded {video_source.name}. The unique identifier of your video is {task.video_id}")
     # return task.video_id
+    st.success(f"Uploaded {video_source if is_url else video_source}. The unique identifier of your video is {task.video_id}")
+    return task.video_id
 
 # Function to generate text for video
 def generate_text_for_video(client, video_id, selected_prompt):
