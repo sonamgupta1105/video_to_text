@@ -3,10 +3,11 @@ from twelvelabs import TwelveLabs
 from pytube import YouTube
 import time
 import os
-
+import matplotlib.pyplot as plt
+from wordcloud import WordCloud
 
 # Hard-coded API key
-API_KEY = "tlk_1KNS9E41MY0HZ42VBM9PZ25M5CX9"  
+API_KEY = "tlk_1KNS9E41MY0HZ42VBM9PZ25M5CX9"  # Replace with your actual Twelve Labs API key
 client = TwelveLabs(api_key = API_KEY)
 
 # Initialize session state for generated content and index
@@ -28,14 +29,14 @@ def create_index(client):
     if st.session_state['index_id'] is None:
         try:
             index = client.index.create(
-                name="new_v3",
+                name="ind_v5",
                 engines=[
                     {
                         "name": "pegasus1",
                         "options": ["visual", "conversation"],
                     }
                 ]
-            )
+            )   
             st.session_state['index_id'] = index.id
             st.success(f"Created index: id={index.id} name={index.name} engines={index.engines}")
         except Exception as e:
@@ -78,44 +79,42 @@ def upload_video(client, video_source, is_url=False):
             return None
 
         time.sleep(5)
-    # if is_url == True:
-    #     st.success(f"Uploaded video from URL. The unique identifier of your video is {task.video_id}")
-    # else:
-    #     st.success(f"Uploaded {video_source.name}. The unique identifier of your video is {task.video_id}")
-    # return task.video_id
-    st.success(f"Uploaded {video_source if is_url else video_source}. The unique identifier of your video is {task.video_id}")
+    if is_url == True:
+        st.success(f"Uploaded video from URL. The unique identifier of your video is {task.video_id}")
+    else:
+        st.success(f"Uploaded {video_source}. The unique identifier of your video is {task.video_id}")
     return task.video_id
+    # st.success(f"Uploaded {video_source if is_url else video_source}. The unique identifier of your video is {task.video_id}")
+    # return task.video_id
 
 # Function to generate text for video
 def generate_text_for_video(client, video_id, selected_prompt):
     content = ""
+    try:
+        if selected_prompt == "Provide a detailed summary of the video.":
+            res = client.generate.summarize(video_id=video_id, type="summary")
+            content = f"**Summary**: {res.summary}"
+        
+        elif selected_prompt == "Generate important keywords.":
+            res = client.generate.gist(video_id=video_id, types=["title", "topic", "hashtag"])
+            content = f"**Title**: {res.title}\n\n**Topics**: {', '.join(res.topics)}\n\n**Hashtags**: {', '.join(res.hashtags)}"
 
-    if selected_prompt == "Provide a detailed summary of the video.":
-        res = client.generate.summarize(video_id=video_id, type="summary")
-        content = f"**Summary**: {res.summary}"
 
-    elif selected_prompt == "Generate keywords for SEO.":
-        res = client.generate.text(video_id=video_id, prompt="Generate five keywords for SEO from the content of the video.")
-        if hasattr(res, 'data'):
-            content = f"**SEO Keywords**: {res.data}"
-        else:
-            content = "**SEO Keywords**: Unable to generate keywords."
+        elif selected_prompt == "Create an engaging social media post based on the video.":
+            res = client.generate.text(video_id=video_id, prompt="Based on this video, create an engaging social media post. Can you also give any relevant suggestions for the user?")
+            content = f"**Social media post**: {res.data}"
+        
+        elif selected_prompt == "Suggest educational insights from the video content.":
+            res = client.generate.summarize(video_id=video_id, type="highlight")
+            for highlight in res.highlights:
+                content = f"  **Highlight**: {highlight.highlight}\n    Start: {highlight.start}, End: {highlight.end}"
 
-    elif selected_prompt == "Create an engaging social media post based on the video.":
-        res = client.generate.text(video_id=video_id, prompt="Create an engaging social media post based on the content of the video uploaded.")
-        if hasattr(res, 'data'):
-            content = f"**Social Media Post**: {res.data}"
-        else:
-            content = "**Social Media Post**: Unable to generate post."
+    except Exception as e:
+        content = f"Error generating content: {e}"
 
-    elif selected_prompt == "Suggest educational insights and questions from the video content.":
-        res = client.generate.text(video_id=video_id, prompt="Suggest educational insights and questions that are relevant to the content of the video uploaded.")
-        if hasattr(res, 'data'):
-            content = f"**Educational Insights and Questions**: {res.data}"
-        else:
-            content = "**Educational Insights and Questions**: Unable to generate insights and questions."
 
     st.session_state['generated_content'].append(content)
+
 
 # Streamlit app interface
 st.title('Video-to-Text Application')
@@ -129,9 +128,9 @@ else:
 
 predefined_prompts = [
     "Provide a detailed summary of the video.",
-    "Generate keywords for SEO.",
+    "Generate important keywords.",
     "Create an engaging social media post based on the video.",
-    "Suggest educational insights and questions from the video content."
+    "Suggest educational insights from the video content."
 ]
 
 selected_prompt = st.selectbox("Select a prompt for text generation:", predefined_prompts)
@@ -164,6 +163,7 @@ if st.session_state['generated_content']:
     for content in st.session_state['generated_content']:
         st.write(content)
 
+
 # User feedback section
 st.header("Feedback")
 rating = st.radio("How would you rate the generated content?", ("Excellent", "Good", "Average", "Poor"))
@@ -172,3 +172,33 @@ feedback = st.text_area("Any additional comments or suggestions?")
 if st.button("Submit Feedback"):
     st.success("Thank you for your feedback!")
 
+# try:
+#     if selected_prompt == "Provide a detailed summary of the video.":
+#         res = client.generate.summarize(video_id=video_id, type="summary")
+#         if hasattr(res, 'summary'):
+#             content = f"**Summary**: {res.summary}"
+#         else:
+#             content = "**Summary**: Unable to generate summary."
+
+#     elif selected_prompt == "Generate important keywords.":
+#         res = client.generate.gist(video_id=video_id, prompt="Generate five important keywords from the content of the video.", types=["title", "topic", "hashtag"])
+#         if hasattr(res, 'title') and hasattr(res, 'topic') and hasattr(res, 'hashtag'):
+#             content = f"**Title**: {res.title}\n\n**Topics**: {', '.join(res.topics)}\n\n**Hashtags**: {', '.join(res.hashtags)}"
+#         else:
+#             content = "**SEO Keywords**: Unable to generate keywords."
+
+#     elif selected_prompt == "Create an engaging social media post based on the video.":
+#         res = client.generate.text(video_id=video_id, prompt="Create an engaging social media post based on the content of the video uploaded.")
+#         if hasattr(res, 'data'):
+#             content = f"**Social Media Post**: {res.data}"
+#         else:
+#             content = "**Social Media Post**: Unable to generate post."
+
+#     elif selected_prompt == "Suggest educational insights from the video content.":
+#         res = client.generate.summarize(video_id=video_id, prompt="Suggest educational insights that are relevant to the content of the video uploaded.", type="highlight")
+#         if hasattr(res, 'highlight'):
+#             content = f"**Educational Insights**: {res.highlights}"
+#         else:
+#             content = "**Educational Insights**: Unable to generate insights."
+# except Exception as e:
+#     content = f"Error generating content: {e}"
