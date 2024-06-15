@@ -21,6 +21,9 @@ Twelve Labs API key and index name
 
 PyTube Python package
 
+### How to Run the File
+streamlit run 12labs_url_v2.py on Anaconda command prompt. 
+
 ### Usage
 Choose Video Source: Select either "Upload a video file" or "Provide a YouTube URL".
 
