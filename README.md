@@ -4,8 +4,11 @@ This repository contains a Streamlit-based application that transforms video con
 
 ## Features
 Upload Video Files or YouTube URLs: Users can either upload local video files or enter a YouTube URL for processing.
+
 Text Generation: The application offers multiple text generation options including summaries, keywords, social media posts, and educational insights.
+
 Real-Time Processing: Users can see the status of video processing and text generation in real-time.
+
 Feedback Collection: Users can provide feedback on the generated content, which can be stored for further analysis.
 
 ## Getting Started
