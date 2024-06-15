@@ -6,6 +6,13 @@ import os
 import matplotlib.pyplot as plt
 from wordcloud import WordCloud
 
+
+'''Initialization and Configuration:
+
+API key for Twelve Labs is hard-coded (should be managed via environment variables for security).
+Session state is initialized to store generated content and index ID.
+
+'''
 # Hard-coded API key
 API_KEY = "tlk_1KNS9E41MY0HZ42VBM9PZ25M5CX9"  # Replace with your actual Twelve Labs API key
 client = TwelveLabs(api_key = API_KEY)
@@ -16,6 +23,12 @@ if 'generated_content' not in st.session_state:
 if 'index_id' not in st.session_state:
     st.session_state['index_id'] = None
 
+'''Custom CSS:
+
+Custom CSS is injected to enhance the application’s visual appearance.
+
+'''
+
 # Injest css for background
 def local_css(file_name):
     with open(file_name) as f:
@@ -23,13 +36,18 @@ def local_css(file_name):
 
 local_css("style.css")
 
+'''Index Creation:
+
+Ensures an index is created if it doesn’t already exist. This is necessary for storing and processing video content.
+
+'''
 
 # Function to create an index if it doesn't exist
 def create_index(client):
     if st.session_state['index_id'] is None:
         try:
             index = client.index.create(
-                name="ind_v5",
+                name = "test_index",
                 engines=[
                     {
                         "name": "pegasus1",
@@ -42,6 +60,12 @@ def create_index(client):
         except Exception as e:
             st.error(f"Failed to create index: {e}")
 
+''' Video Downloading:
+
+Uses PyTube to download videos from YouTube URLs provided by users.
+
+'''
+
 # Function to download YouTube video
 def download_youtube_video(url):
     try:
@@ -52,6 +76,12 @@ def download_youtube_video(url):
     except Exception as e:
         st.error(f"Failed to download YouTube video: {e}")
         return None
+
+''' Video Uploading:
+
+Uploads the video to Twelve Labs API and creates a task to process it.
+
+'''
 
 # Function to upload video to the existing index
 def upload_video(client, video_source, is_url=False):
@@ -86,6 +116,12 @@ def upload_video(client, video_source, is_url=False):
     return task.video_id
     # st.success(f"Uploaded {video_source if is_url else video_source}. The unique identifier of your video is {task.video_id}")
     # return task.video_id
+
+'''Text Generation:
+
+Based on the user’s selected prompt, the appropriate Twelve Labs API function is called to generate the desired text.
+
+'''
 
 # Function to generate text for video
 def generate_text_for_video(client, video_id, selected_prompt):
@@ -135,6 +171,12 @@ predefined_prompts = [
 
 selected_prompt = st.selectbox("Select a prompt for text generation:", predefined_prompts)
 
+''' Video Processing:
+
+Handles both file uploads and YouTube URLs, ensuring the index is created, the video is uploaded, and the text is generated.
+
+'''
+
 def process_videos(uploaded_files, youtube_url, upload_option, selected_prompt):
     create_index(client)  # Ensure the index is created
     if upload_option == "Upload a video file":
@@ -150,6 +192,12 @@ def process_videos(uploaded_files, youtube_url, upload_option, selected_prompt):
             if video_id:
                 generate_text_for_video(client, video_id, selected_prompt)
             os.remove(video_path)  # Clean up downloaded video file
+
+'''User Interface:
+
+Streamlit components for user interaction, including video file uploader, YouTube URL input, prompt selection, and feedback section.
+
+'''
 
 if st.button("Process Videos"):
     if upload_option == "Upload a video file" and uploaded_files:
@@ -171,34 +219,3 @@ feedback = st.text_area("Any additional comments or suggestions?")
 
 if st.button("Submit Feedback"):
     st.success("Thank you for your feedback!")
-
-# try:
-#     if selected_prompt == "Provide a detailed summary of the video.":
-#         res = client.generate.summarize(video_id=video_id, type="summary")
-#         if hasattr(res, 'summary'):
-#             content = f"**Summary**: {res.summary}"
-#         else:
-#             content = "**Summary**: Unable to generate summary."
-
-#     elif selected_prompt == "Generate important keywords.":
-#         res = client.generate.gist(video_id=video_id, prompt="Generate five important keywords from the content of the video.", types=["title", "topic", "hashtag"])
-#         if hasattr(res, 'title') and hasattr(res, 'topic') and hasattr(res, 'hashtag'):
-#             content = f"**Title**: {res.title}\n\n**Topics**: {', '.join(res.topics)}\n\n**Hashtags**: {', '.join(res.hashtags)}"
-#         else:
-#             content = "**SEO Keywords**: Unable to generate keywords."
-
-#     elif selected_prompt == "Create an engaging social media post based on the video.":
-#         res = client.generate.text(video_id=video_id, prompt="Create an engaging social media post based on the content of the video uploaded.")
-#         if hasattr(res, 'data'):
-#             content = f"**Social Media Post**: {res.data}"
-#         else:
-#             content = "**Social Media Post**: Unable to generate post."
-
-#     elif selected_prompt == "Suggest educational insights from the video content.":
-#         res = client.generate.summarize(video_id=video_id, prompt="Suggest educational insights that are relevant to the content of the video uploaded.", type="highlight")
-#         if hasattr(res, 'highlight'):
-#             content = f"**Educational Insights**: {res.highlights}"
-#         else:
-#             content = "**Educational Insights**: Unable to generate insights."
-# except Exception as e:
-#     content = f"Error generating content: {e}"
