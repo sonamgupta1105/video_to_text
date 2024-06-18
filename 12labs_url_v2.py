@@ -4,12 +4,7 @@ from pytube import YouTube
 import time
 import os
 
-'''Initialization and Configuration:
 
-API key for Twelve Labs is hard-coded (should be managed via environment variables for security).
-Session state is initialized to store generated content and index ID.
-
-'''
 # Hard-coded API key
 API_KEY = "tlk_1KNS9E41MY0HZ42VBM9PZ25M5CX9"  # Replace with your actual Twelve Labs API key
 client = TwelveLabs(api_key = API_KEY)
@@ -20,11 +15,6 @@ if 'generated_content' not in st.session_state:
 if 'index_id' not in st.session_state:
     st.session_state['index_id'] = None
 
-'''Custom CSS:
-
-Custom CSS is injected to enhance the application’s visual appearance.
-
-'''
 
 # Injest css for background
 def local_css(file_name):
@@ -32,12 +22,6 @@ def local_css(file_name):
         st.markdown(f'<style>{f.read()}</style>', unsafe_allow_html=True)
 
 local_css("style.css")
-
-'''Index Creation:
-
-Ensures an index is created if it doesn’t already exist. This is necessary for storing and processing video content.
-
-'''
 
 # Function to create an index if it doesn't exist
 def create_index(client):
@@ -57,11 +41,6 @@ def create_index(client):
         except Exception as e:
             st.error(f"Failed to create index: {e}")
 
-''' Video Downloading:
-
-Uses PyTube to download videos from YouTube URLs provided by users.
-
-'''
 
 # Function to download YouTube video
 def download_youtube_video(url):
@@ -73,12 +52,6 @@ def download_youtube_video(url):
     except Exception as e:
         st.error(f"Failed to download YouTube video: {e}")
         return None
-
-''' Video Uploading:
-
-Uploads the video to Twelve Labs API and creates a task to process it.
-
-'''
 
 # Function to upload video to the existing index
 def upload_video(client, video_source, is_url=False):
@@ -114,11 +87,6 @@ def upload_video(client, video_source, is_url=False):
     # st.success(f"Uploaded {video_source if is_url else video_source}. The unique identifier of your video is {task.video_id}")
     # return task.video_id
 
-'''Text Generation:
-
-Based on the user’s selected prompt, the appropriate Twelve Labs API function is called to generate the desired text.
-
-'''
 
 # Function to generate text for video
 def generate_text_for_video(client, video_id, selected_prompt):
@@ -168,11 +136,6 @@ predefined_prompts = [
 
 selected_prompt = st.selectbox("Select a prompt for text generation:", predefined_prompts)
 
-''' Video Processing:
-
-Handles both file uploads and YouTube URLs, ensuring the index is created, the video is uploaded, and the text is generated.
-
-'''
 
 def process_videos(uploaded_files, youtube_url, upload_option, selected_prompt):
     create_index(client)  # Ensure the index is created
@@ -189,12 +152,6 @@ def process_videos(uploaded_files, youtube_url, upload_option, selected_prompt):
             if video_id:
                 generate_text_for_video(client, video_id, selected_prompt)
             os.remove(video_path)  # Clean up downloaded video file
-
-'''User Interface:
-
-Streamlit components for user interaction, including video file uploader, YouTube URL input, prompt selection, and feedback section.
-
-'''
 
 if st.button("Process Videos"):
     if upload_option == "Upload a video file" and uploaded_files:
