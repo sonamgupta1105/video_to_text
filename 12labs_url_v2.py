@@ -3,9 +3,6 @@ from twelvelabs import TwelveLabs
 from pytube import YouTube
 import time
 import os
-import matplotlib.pyplot as plt
-from wordcloud import WordCloud
-
 
 '''Initialization and Configuration:
 
