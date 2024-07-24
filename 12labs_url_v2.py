@@ -28,7 +28,7 @@ def create_index(client):
     if st.session_state['index_id'] is None:
         try:
             index = client.index.create(
-                name = "test_index_3",
+                name = "test_index_4",
                 engines=[
                     {
                         "name": "pegasus1.1",
@@ -47,6 +47,9 @@ def download_youtube_video(url):
     try:
         yt = YouTube(url)
         video = yt.streams.filter(progressive=True, file_extension='mp4').first()
+        if video is None:
+            st.error("No suitable video stream found.")
+            return None
         video_path = video.download(output_path='/tmp', filename='downloaded_video.mp4')
         return video_path
     except Exception as e:
