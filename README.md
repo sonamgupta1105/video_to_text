@@ -19,7 +19,7 @@ Streamlit
 
 Twelve Labs API key and index name
 
-PyTube Python package
+yt-dlp Python package
 
 ### How to Run the File
 streamlit run 12labs_url_v2.py on Anaconda command prompt. 
@@ -42,7 +42,7 @@ Streamlit: Chosen for its simplicity and ease of creating interactive web applic
 
 Twelve Labs API: Used for powerful video-to-text transformations.
 
-PyTube: Utilized for downloading YouTube videos.
+yt-dlp: Utilized for downloading YouTube videos.
 
 Session State: Manages the state of generated content and video index to ensure consistent behavior.
 
@@ -55,4 +55,4 @@ Twelve Labs for providing the API.
 
 Streamlit for the interactive web framework.
 
-PyTube for YouTube video handling.
+yt-dlp for YouTube video handling.
