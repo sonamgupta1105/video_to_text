@@ -28,10 +28,10 @@ def create_index(client):
     if st.session_state['index_id'] is None:
         try:
             index = client.index.create(
-                name = "test_index_1",
+                name = "test_index_2",
                 engines=[
                     {
-                        "name": "pegasus2",
+                        "name": "pegasus1.1",
                         "options": ["visual", "conversation"],
                     }
                 ]
