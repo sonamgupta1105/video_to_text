@@ -159,7 +159,10 @@ def process_videos(uploaded_files, youtube_url, upload_option, selected_prompt):
 if st.button("Process Videos"):
     if upload_option == "Upload a video file" and uploaded_files:
         process_videos(uploaded_files, None, upload_option, selected_prompt)
+    # elif upload_option == "Provide a YouTube URL" and youtube_url:
+    #     process_videos(None, youtube_url, upload_option, selected_prompt)
     elif upload_option == "Provide a YouTube URL" and youtube_url:
+        youtube_url = youtube_url.strip()  # Remove leading/trailing whitespace
         process_videos(None, youtube_url, upload_option, selected_prompt)
 
 # Display generated content
