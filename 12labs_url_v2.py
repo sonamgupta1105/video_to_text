@@ -31,7 +31,7 @@ def create_index(client):
                 name = "test_index_1",
                 engines=[
                     {
-                        "name": "pegasus1",
+                        "name": "pegasus2",
                         "options": ["visual", "conversation"],
                     }
                 ]
