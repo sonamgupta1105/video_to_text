@@ -6,7 +6,7 @@ import os
 
 
 # Hard-coded API key
-API_KEY = "tlk_1KNS9E41MY0HZ42VBM9PZ25M5CX9"  # Replace with your actual Twelve Labs API key
+API_KEY = "tlk_1K68Z2V2SQ6GWR2NA0J6211WSXEJ"  # Replace with your actual Twelve Labs API key
 client = TwelveLabs(api_key = API_KEY)
 
 # Initialize session state for generated content and index
