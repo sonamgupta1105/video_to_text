@@ -1,6 +1,6 @@
 import streamlit as st
 from twelvelabs import TwelveLabs
-from pytube import YouTube
+#from pytube import YouTube
 import time
 import os
 
@@ -23,12 +23,12 @@ def local_css(file_name):
 
 local_css("style.css")
 
-# Function to create an index if it doesn't exist
+
 def create_index(client):
     if st.session_state['index_id'] is None:
         try:
             index = client.index.create(
-                name = "test_index_5",
+                name = "test_index_11",
                 engines=[
                     {
                         "name": "pegasus1.1",
@@ -41,16 +41,12 @@ def create_index(client):
         except Exception as e:
             st.error(f"Failed to create index: {e}")
 
-
-# Function to download YouTube video
 def download_youtube_video(url):
     try:
-        yt = YouTube(url)
-        video = yt.streams.filter(progressive=True, file_extension='mp4').first()
-        if video is None:
-            st.error("No suitable video stream found.")
-            return None
-        video_path = video.download(output_path='/tmp', filename='downloaded_video.mp4')
+        video_path = 'downloaded_video.mp4'  # Adjusted for Windows environment
+        ydl_opts = {'outtmpl': video_path}
+        with yt_dlp.YoutubeDL(ydl_opts) as ydl:
+            ydl.download([url])
         return video_path
     except Exception as e:
         st.error(f"Failed to download YouTube video: {e}")
@@ -82,14 +78,11 @@ def upload_video(client, video_source, is_url=False):
             return None
 
         time.sleep(5)
-    if is_url == True:
+    if is_url:
         st.success(f"Uploaded video from URL. The unique identifier of your video is {task.video_id}")
     else:
         st.success(f"Uploaded {video_source}. The unique identifier of your video is {task.video_id}")
     return task.video_id
-    # st.success(f"Uploaded {video_source if is_url else video_source}. The unique identifier of your video is {task.video_id}")
-    # return task.video_id
-
 
 # Function to generate text for video
 def generate_text_for_video(client, video_id, selected_prompt):
@@ -98,16 +91,15 @@ def generate_text_for_video(client, video_id, selected_prompt):
         if selected_prompt == "Provide a detailed summary of the video.":
             res = client.generate.summarize(video_id=video_id, type="summary")
             content = f"**Summary**: {res.summary}"
-        
+
         elif selected_prompt == "Generate important keywords.":
             res = client.generate.gist(video_id=video_id, types=["title", "topic", "hashtag"])
             content = f"**Title**: {res.title}\n\n**Topics**: {', '.join(res.topics)}\n\n**Hashtags**: {', '.join(res.hashtags)}"
 
-
         elif selected_prompt == "Create an engaging social media post based on the video.":
             res = client.generate.text(video_id=video_id, prompt="Based on this video, create an engaging social media post. Can you also give any relevant suggestions for the user?")
             content = f"**Social media post**: {res.data}"
-        
+
         elif selected_prompt == "Suggest educational insights from the video content.":
             res = client.generate.summarize(video_id=video_id, type="highlight")
             for highlight in res.highlights:
@@ -116,9 +108,7 @@ def generate_text_for_video(client, video_id, selected_prompt):
     except Exception as e:
         content = f"Error generating content: {e}"
 
-
     st.session_state['generated_content'].append(content)
-
 
 # Streamlit app interface
 st.title('Video-to-Text Application')
@@ -139,7 +129,6 @@ predefined_prompts = [
 
 selected_prompt = st.selectbox("Select a prompt for text generation:", predefined_prompts)
 
-
 def process_videos(uploaded_files, youtube_url, upload_option, selected_prompt):
     create_index(client)  # Ensure the index is created
     if upload_option == "Upload a video file":
@@ -159,8 +148,6 @@ def process_videos(uploaded_files, youtube_url, upload_option, selected_prompt):
 if st.button("Process Videos"):
     if upload_option == "Upload a video file" and uploaded_files:
         process_videos(uploaded_files, None, upload_option, selected_prompt)
-    # elif upload_option == "Provide a YouTube URL" and youtube_url:
-    #     process_videos(None, youtube_url, upload_option, selected_prompt)
     elif upload_option == "Provide a YouTube URL" and youtube_url:
         youtube_url = youtube_url.strip()  # Remove leading/trailing whitespace
         process_videos(None, youtube_url, upload_option, selected_prompt)
@@ -170,7 +157,6 @@ if st.session_state['generated_content']:
     st.write("### About the Video")
     for content in st.session_state['generated_content']:
         st.write(content)
-
 
 # User feedback section
 st.header("Feedback")
