@@ -28,7 +28,7 @@ def create_index(client):
     if st.session_state['index_id'] is None:
         try:
             index = client.index.create(
-                name = "test_index_4",
+                name = "test_index_5",
                 engines=[
                     {
                         "name": "pegasus1.1",
