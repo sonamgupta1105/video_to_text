@@ -3,6 +3,7 @@ from twelvelabs import TwelveLabs
 #from pytube import YouTube
 import time
 import os
+import yt_dlp
 
 
 # Hard-coded API key
